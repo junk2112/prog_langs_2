@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tables</title>
+</head>
+<body>
+    <table id="table" border="1" width="100%"></table>
+
+    <script>
+        function createTable() {
+            var table = document.getElementById("table");
+            for (var i = 0; i < 20; i++) {
+                var row = table.insertRow(i)
+                for (var j = 0; j < 26; j++) {
+                    var cell = row.insertCell(j)
+                    id = alphaByIndex(j) + (i + 1).toString()
+                    cell.innerHTML = "<input " + "id='" + id + "' " +
+                                     "onkeypress=\"calculate(event, '" + 
+                                     id + "')\"></input>"
+                }
+            }
+        }
+        function calculate(event, id) {
+            if (event.keyCode == 13) {
+                var item = document.getElementById(id);
+                if (item.value.startsWith('=')) {
+                    matches = item.value.match(/[A-Z]\d+/g)
+                    matches.forEach(function(match) {
+                        cell = document.getElementById(match);
+                        item.value = item.value.split(match).join(cell.value);
+                    })
+                    item.value = eval(item.value.substring(1));
+                }
+            }
+        }
+        function alphaByIndex(index) {
+            var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            return alphabet.charAt(index)
+        }
+        createTable();
+
+    </script>
+</body>
+</html>
