@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tic-Tac-Toe</title>
+</head>
+<body>
+    <div id='status'></div>
+    <table id="table" border="1"></table>
+
+    <script>
+        const hosthame = window.location.hostname;
+        const portNumber = window.location.port;
+        const wsPath = "ws://"+hosthame+":"+portNumber+"/ws";
+        const ws = new WebSocket(wsPath);
+        var client_id = null;
+        ws.addEventListener("message", function (event) {
+            const data = JSON.parse(event.data);
+            client_id = data.client_id
+            refreshTable(data.field);
+            document.getElementById('status').innerText = data.msg;
+        });
+        function send(event, id) {
+            const input = document.getElementById(id);
+            const text = input.innerHTML;
+            const messageToSend = {
+                cell: id,
+                client_id: client_id
+            };
+            ws.send(JSON.stringify(messageToSend));
+        }
+        function refreshTable(field) {
+            var table = document.getElementById("table");
+            table.innerHTML = "<table id=\"table\" border=\"1\"></table>";
+            for (var i = 0; i < 10; i++) {
+                var row = table.insertRow(i)
+                for (var j = 0; j < 10; j++) {
+                    var cell = row.insertCell(j)
+                    id = i.toString() + "_" + j.toString();
+                    cell.innerHTML = "<div style='height:30px; width:30px;' id='" + id + "' " +
+                                     "onclick=\"send(event, '" + 
+                                     id + "')\">" + field[id] + "</div>"
+                }
+            }
+        }
+    </script>
+</body>
+</html>
